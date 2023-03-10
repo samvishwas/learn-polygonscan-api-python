@@ -1,10 +1,40 @@
 import json
+from decimal import Decimal
+
+from PolygonScanLib.Stats import Stats
 from PolygonScanLib.Accounts import Accounts
 from PolygonScanLib.Contracts import Contracts
 
+
+#------------------------------------------------
+
+def wei_to_matic(wei):
+    matic = wei / 10**18
+    return Decimal(matic)
+
 #------------------------------------------------
 def main():
-  """
+
+  stats = Stats();
+
+  print("Begin-Stats: Get Total Supply of MATIC on the Polygon POS Chain.")
+  maticSupply = wei_to_matic(stats.getTotalSupplyOfMATIC())
+  print(f"Total Supply of MATIC: {format(maticSupply, ',.8f')}.")
+  
+  print("Begin-End: Get Total Supply of MATIC on the Polygon POS Chain.")
+  print()
+
+  print("Begin-Stats: Get MATIC Last Price.")
+  priceUSD = stats.getMATICLastPrice(currency="maticusd");
+  print(f"MATIC Last Price in USD: {priceUSD}.")
+  print("Begin-End: Get MATIC Last Price.")
+  print()
+
+
+  print(f"Current valuation of MATIC in USD: {format(maticSupply * priceUSD, ',.2f')}.");
+  print()
+  print()
+
   accounts = Accounts()
   accountAddresses = [
                 "0x1ED783A27ef74cfa6FD1c5712241F6C2217A9b79", 
@@ -17,7 +47,7 @@ def main():
   print("Begin-Accounts: Get MATIC Balance for a Single Address.")
   for address in accountAddresses:
     balance = accounts.getBalance(address)
-    print(f"[{address}]: {balance}")
+    print(f"[{address}]: {balance} wei, valued at {format(wei_to_matic(balance) * priceUSD, ',.2f')} USD.")
   print("End-Accounts: Get MATIC Balance for a Single Address.")
   print()
   
@@ -42,7 +72,7 @@ def main():
   
   print("End-Accounts: Get a list of 'Internal' Transactions by Address.")
   print()
-  """
+  print()
 
   contracts = Contracts()
   contractAddresses = [
@@ -53,14 +83,13 @@ def main():
                 "0x000D503260D816AF000",                        # In invalid address
               ]
 
-  """
+  
   print("Begin-Contracts: Get Contract ABI for Verified Contract Source Codes.")
   for address in contractAddresses:
     info = contracts.getABI(address)
     print(f"[{address}]: {info}") 
   print("End-Contracts: Get Contract ABI for Verified Contract Source Codes.")
   print()
-  """
   
   print("Begin-Contracts: Get Contract Source Code for Verified Contract Source Codes.")
   for address in contractAddresses:
@@ -68,6 +97,6 @@ def main():
     print(f"[{address}]: {info}") 
   print("End-Contracts: Get Contract Source Code for Verified Contract Source Codes.")
   print()
-  
 
+#------------------------------------------------
 main()
